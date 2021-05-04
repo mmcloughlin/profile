@@ -9,7 +9,7 @@ import (
 	"runtime/pprof"
 )
 
-type method interface {
+type Method interface {
 	Name() string
 	SetFlags(f *flag.FlagSet)
 	Enabled() bool
