@@ -120,8 +120,8 @@ func (m *mem) SetFlags(f *flag.FlagSet) {
 	//		memProfile = flag.String("test.memprofile", "", "write an allocation profile to `file`")
 	//		memProfileRate = flag.Int("test.memprofilerate", 0, "set memory allocation profiling `rate` (see runtime.MemProfileRate)")
 	//
-	flag.StringVar(&m.filename, "memprofile", "", "write an allocation profile to `file`")
-	flag.IntVar(&m.rate, "memprofilerate", 0, "set memory allocation profiling `rate` (see runtime.MemProfileRate)")
+	f.StringVar(&m.filename, "memprofile", "", "write an allocation profile to `file`")
+	f.IntVar(&m.rate, "memprofilerate", 0, "set memory allocation profiling `rate` (see runtime.MemProfileRate)")
 }
 
 func (m *mem) Enabled() bool { return m.filename != "" }
@@ -193,7 +193,7 @@ func ThreadcreationProfile(p *Profile) {
 func (l *lookup) Name() string { return l.name }
 
 func (l *lookup) SetFlags(f *flag.FlagSet) {
-	flag.StringVar(&l.filename, l.name+"profile", "", "write a "+l.long+" profile to `file`")
+	f.StringVar(&l.filename, l.name+"profile", "", "write a "+l.long+" profile to `file`")
 }
 
 func (l *lookup) Enabled() bool { return l.filename != "" }
@@ -238,8 +238,8 @@ func (b *block) SetFlags(f *flag.FlagSet) {
 	//		blockProfile = flag.String("test.blockprofile", "", "write a goroutine blocking profile to `file`")
 	//		blockProfileRate = flag.Int("test.blockprofilerate", 1, "set blocking profile `rate` (see runtime.SetBlockProfileRate)")
 	//
-	flag.StringVar(&b.filename, "blockprofile", "", "write a goroutine blocking profile to `file`")
-	flag.IntVar(&b.rate, "blockprofilerate", 1, "set blocking profile `rate` (see runtime.SetBlockProfileRate)")
+	f.StringVar(&b.filename, "blockprofile", "", "write a goroutine blocking profile to `file`")
+	f.IntVar(&b.rate, "blockprofilerate", 1, "set blocking profile `rate` (see runtime.SetBlockProfileRate)")
 }
 
 func (b *block) Enabled() bool { return b.filename != "" && b.rate > 0 }
@@ -293,8 +293,8 @@ func (m *mutex) SetFlags(f *flag.FlagSet) {
 	//		mutexProfile = flag.String("test.mutexprofile", "", "write a mutex contention profile to the named file after execution")
 	//		mutexProfileFraction = flag.Int("test.mutexprofilefraction", 1, "if >= 0, calls runtime.SetMutexProfileFraction()")
 	//
-	flag.StringVar(&m.filename, "mutexprofile", "", "write a mutex contention profile to the named file after execution")
-	flag.IntVar(&m.rate, "mutexprofilefraction", 1, "if >= 0, calls runtime.SetMutexProfileFraction()")
+	f.StringVar(&m.filename, "mutexprofile", "", "write a mutex contention profile to the named file after execution")
+	f.IntVar(&m.rate, "mutexprofilefraction", 1, "if >= 0, calls runtime.SetMutexProfileFraction()")
 }
 
 func (m *mutex) Enabled() bool { return m.filename != "" && m.rate > 0 }
@@ -344,7 +344,7 @@ func (t *tracer) SetFlags(f *flag.FlagSet) {
 	//
 	//		traceFile = flag.String("test.trace", "", "write an execution trace to `file`")
 	//
-	flag.StringVar(&t.filename, "trace", "", "write an execution trace to `file`")
+	f.StringVar(&t.filename, "trace", "", "write an execution trace to `file`")
 }
 
 func (t *tracer) Enabled() bool { return t.filename != "" }
