@@ -9,7 +9,7 @@ import (
 	"runtime/pprof"
 )
 
-type Method interface {
+type method interface {
 	Name() string
 	SetFlags(f *flag.FlagSet)
 	Enabled() bool
@@ -31,14 +31,21 @@ type Method interface {
 //         -cpuprofile cpu.out
 //
 
-type CPU struct {
+type cpu struct {
 	filename string
-	f        io.WriteCloser
+
+	f io.WriteCloser
 }
 
-func (CPU) Name() string { return "cpu" }
+func CPUProfile(p *Profile) {
+	p.addmethod(&cpu{
+		filename: "cpu.pprof",
+	})
+}
 
-func (c *CPU) SetFlags(f *flag.FlagSet) {
+func (cpu) Name() string { return "cpu" }
+
+func (c *cpu) SetFlags(f *flag.FlagSet) {
 	// Reference: https://github.com/golang/go/blob/303b194c6daf319f88e56d8ece56d924044f65a8/src/testing/testing.go#L292
 	//
 	//		cpuProfile = flag.String("test.cpuprofile", "", "write a cpu profile to `file`")
@@ -46,9 +53,9 @@ func (c *CPU) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&c.filename, "cpuprofile", "", "write a cpu profile to `file`")
 }
 
-func (c *CPU) Enabled() bool { return c.filename != "" }
+func (c *cpu) Enabled() bool { return c.filename != "" }
 
-func (c *CPU) Start() error {
+func (c *cpu) Start() error {
 	// Open output file.
 	f, err := os.Create(c.filename)
 	if err != nil {
@@ -65,7 +72,7 @@ func (c *CPU) Start() error {
 	return nil
 }
 
-func (c *CPU) Stop() error {
+func (c *cpu) Stop() error {
 	pprof.StopCPUProfile()
 	return c.f.Close()
 }
@@ -85,16 +92,27 @@ func (c *CPU) Stop() error {
 //         -memprofile mem.out
 //         -memprofilerate n
 
-type Mem struct {
+type mem struct {
 	filename string
 	rate     int
 
 	prevrate int
 }
 
-func (Mem) Name() string { return "mem" }
+// TODO: const DefaultMemProfileRate = 4096
+// TODO: func MemProfileAllocs() func(*Profile)
+// TODO: func MemProfileHeap() func(*Profile)
+// TODO: func MemProfileRate(rate int) func(*Profile)
 
-func (m *Mem) SetFlags(f *flag.FlagSet) {
+func MemProfile(p *Profile) {
+	p.addmethod(&mem{
+		filename: "mem.pprof",
+	})
+}
+
+func (mem) Name() string { return "mem" }
+
+func (m *mem) SetFlags(f *flag.FlagSet) {
 	// Reference: https://github.com/golang/go/blob/303b194c6daf319f88e56d8ece56d924044f65a8/src/testing/testing.go#L290-L291
 	//
 	//		memProfile = flag.String("test.memprofile", "", "write an allocation profile to `file`")
@@ -104,9 +122,9 @@ func (m *Mem) SetFlags(f *flag.FlagSet) {
 	flag.IntVar(&m.rate, "memprofilerate", 0, "set memory allocation profiling `rate` (see runtime.MemProfileRate)")
 }
 
-func (m *Mem) Enabled() bool { return m.filename != "" }
+func (m *mem) Enabled() bool { return m.filename != "" }
 
-func (m *Mem) Start() error {
+func (m *mem) Start() error {
 	m.prevrate = runtime.MemProfileRate
 	if m.rate > 0 {
 		runtime.MemProfileRate = m.rate
@@ -114,7 +132,7 @@ func (m *Mem) Start() error {
 	return nil
 }
 
-func (m *Mem) Stop() error {
+func (m *mem) Stop() error {
 	// Materialize all statistics.
 	runtime.GC()
 
@@ -149,9 +167,9 @@ func (m *Mem) Stop() error {
 
 // block
 //
-//     - configure:
+//     - configure: N/A
+//     - start:
 //         runtime.SetBlockProfileRate
-//     - start: N/A
 //     - stop:
 //         open file
 //         pprof.Lookup("block").WriteTo
@@ -160,7 +178,48 @@ func (m *Mem) Stop() error {
 //     - flags:
 //         -blockprofile block.out
 //         -blockprofilerate n
-//
+
+type block struct {
+	filename string
+	rate     int
+}
+
+func BlockProfile(p *Profile) {
+	p.addmethod(&block{
+		filename: "block.pprof",
+		rate:     1,
+	})
+}
+
+func (block) Name() string { return "block" }
+
+func (b *block) SetFlags(f *flag.FlagSet) {
+	// Reference: https://github.com/golang/go/blob/303b194c6daf319f88e56d8ece56d924044f65a8/src/testing/testing.go#L293-L294
+	//
+	//		blockProfile = flag.String("test.blockprofile", "", "write a goroutine blocking profile to `file`")
+	//		blockProfileRate = flag.Int("test.blockprofilerate", 1, "set blocking profile `rate` (see runtime.SetBlockProfileRate)")
+	//
+	flag.StringVar(&b.filename, "blockprofile", "", "write a goroutine blocking profile to `file`")
+	flag.IntVar(&b.rate, "blockprofilerate", 1, "set blocking profile `rate` (see runtime.SetBlockProfileRate)")
+}
+
+func (b *block) Enabled() bool { return b.filename != "" && b.rate > 0 }
+
+func (b *block) Start() error {
+	runtime.SetBlockProfileRate(b.rate)
+	return nil
+}
+
+func (b *block) Stop() error {
+	// Write to file.
+	err := writeprofile("block", b.filename)
+
+	// Disable block profiling.
+	runtime.SetBlockProfileRate(0)
+
+	return err
+}
+
 // mutex
 //
 //     - configure:
@@ -174,7 +233,48 @@ func (m *Mem) Stop() error {
 //     - flags:
 //         -mutexprofile mutex.out
 //         -mutexprofilefraction n
-//
+
+type mutex struct {
+	filename string
+	rate     int
+}
+
+func MutexProfile(p *Profile) {
+	p.addmethod(&mutex{
+		filename: "mutex.pprof",
+		rate:     1,
+	})
+}
+
+func (mutex) Name() string { return "mutex" }
+
+func (m *mutex) SetFlags(f *flag.FlagSet) {
+	// Reference: https://github.com/golang/go/blob/303b194c6daf319f88e56d8ece56d924044f65a8/src/testing/testing.go#L295-L296
+	//
+	//		mutexProfile = flag.String("test.mutexprofile", "", "write a mutex contention profile to the named file after execution")
+	//		mutexProfileFraction = flag.Int("test.mutexprofilefraction", 1, "if >= 0, calls runtime.SetMutexProfileFraction()")
+	//
+	flag.StringVar(&m.filename, "mutexprofile", "", "write a mutex contention profile to the named file after execution")
+	flag.IntVar(&m.rate, "mutexprofilefraction", 1, "if >= 0, calls runtime.SetMutexProfileFraction()")
+}
+
+func (m *mutex) Enabled() bool { return m.filename != "" && m.rate > 0 }
+
+func (m *mutex) Start() error {
+	runtime.SetMutexProfileFraction(m.rate)
+	return nil
+}
+
+func (m *mutex) Stop() error {
+	// Write to file.
+	err := writeprofile("mutex", m.filename)
+
+	// Disable mutex profiling.
+	runtime.SetMutexProfileFraction(0)
+
+	return err
+}
+
 // trace
 //
 //     - configure: N/A

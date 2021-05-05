@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 
 	"github.com/mmcloughlin/profile"
 )
@@ -11,19 +10,19 @@ import (
 func main() {
 	n := flag.Int("n", 1000000, "sum the integers 1 to `n`")
 
-	r := &profile.Runner{
-		Methods: []profile.Method{
-			&profile.CPU{},
-			&profile.Mem{},
-		},
-		Logger: log.Default(),
-	}
+	p := profile.New(
+		profile.CPUProfile,
+		profile.MemProfile,
+		profile.BlockProfile,
+		profile.MutexProfile,
+	)
 
-	r.SetFlags(flag.CommandLine)
+	p.SetFlags(flag.CommandLine)
+
 	flag.Parse()
 
 	// Start profilers.
-	r.Start()
+	p.Start()
 
 	// Sum 1 to n.
 	sum := 0
@@ -33,5 +32,5 @@ func main() {
 	fmt.Println(sum)
 
 	// Stop profilers.
-	r.Stop()
+	p.Stop()
 }
