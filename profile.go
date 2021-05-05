@@ -19,6 +19,10 @@ func New(options ...func(*Profile)) *Profile {
 	return p
 }
 
+func Start(options ...func(*Profile)) *Profile {
+	return New(options...).Start()
+}
+
 func (p *Profile) Configure(options ...func(*Profile)) {
 	for _, option := range options {
 		option(p)
@@ -37,12 +41,6 @@ func Quiet(p *Profile) {
 }
 
 // TODO: func Start(options ...func(*Profile)) interface{ ... }
-// TODO: func ThreadcreationProfile(p *Profile)
-
-// TODO: func BlockProfile(p *Profile)
-// TODO: func GoroutineProfile(p *Profile)
-// TODO: func MutexProfile(p *Profile)
-// TODO: func TraceProfile(p *Profile)
 
 func (p *Profile) addmethod(m method) {
 	p.methods = append(p.methods, m)
@@ -54,7 +52,7 @@ func (p *Profile) SetFlags(f *flag.FlagSet) {
 	}
 }
 
-func (p *Profile) Start() {
+func (p *Profile) Start() *Profile {
 	// Set defaults.
 	if len(p.methods) == 0 {
 		p.Configure(CPUProfile)
@@ -78,6 +76,8 @@ func (p *Profile) Start() {
 		p.log.Printf("%s profile: started", m.Name())
 		p.running = append(p.running, m)
 	}
+
+	return p
 }
 
 func (p *Profile) Stop() {
