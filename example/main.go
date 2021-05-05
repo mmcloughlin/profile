@@ -17,6 +17,7 @@ func main() {
 		profile.MutexProfile,
 		profile.GoroutineProfile,
 		profile.ThreadcreationProfile,
+		profile.TraceProfile,
 	)
 
 	p.SetFlags(flag.CommandLine)

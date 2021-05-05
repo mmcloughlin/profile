@@ -7,6 +7,7 @@ import (
 	"os"
 	"runtime"
 	"runtime/pprof"
+	"runtime/trace"
 )
 
 type method interface {
@@ -62,12 +63,13 @@ func (c *cpu) Start() error {
 		return err
 	}
 
-	c.f = f
-
 	// Start profile.
 	if err := pprof.StartCPUProfile(f); err != nil {
+		f.Close()
 		return err
 	}
+
+	c.f = f
 
 	return nil
 }
@@ -322,6 +324,54 @@ func (m *mutex) Stop() error {
 //         trace.Stop()
 //     - flags:
 //         -trace trace.out
+
+type tracer struct {
+	filename string
+
+	f io.WriteCloser
+}
+
+func TraceProfile(p *Profile) {
+	p.addmethod(&tracer{
+		filename: "trace.out",
+	})
+}
+
+func (tracer) Name() string { return "trace" }
+
+func (t *tracer) SetFlags(f *flag.FlagSet) {
+	// Reference: https://github.com/golang/go/blob/303b194c6daf319f88e56d8ece56d924044f65a8/src/testing/testing.go#L298
+	//
+	//		traceFile = flag.String("test.trace", "", "write an execution trace to `file`")
+	//
+	flag.StringVar(&t.filename, "trace", "", "write an execution trace to `file`")
+}
+
+func (t *tracer) Enabled() bool { return t.filename != "" }
+
+func (t *tracer) Start() error {
+	// Open output file.
+	f, err := os.Create(t.filename)
+	if err != nil {
+		return err
+	}
+
+	// Start trace.
+	if err := trace.Start(f); err != nil {
+		f.Close()
+		return err
+	}
+
+	t.f = f
+
+	return nil
+
+}
+
+func (t *tracer) Stop() error {
+	trace.Stop()
+	return t.f.Close()
+}
 
 func writeprofile(name, filename string) error {
 	// Open file.
