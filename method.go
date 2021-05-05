@@ -165,6 +165,43 @@ func (m *mem) Stop() error {
 //         close file
 //     - flags: N/A
 
+type lookup struct {
+	name string
+	long string
+
+	filename string
+}
+
+func GoroutineProfile(p *Profile) {
+	p.addmethod(&lookup{
+		name:     "goroutine",
+		long:     "running goroutine",
+		filename: "goroutine.pprof",
+	})
+}
+
+func ThreadcreationProfile(p *Profile) {
+	p.addmethod(&lookup{
+		name:     "threadcreate",
+		long:     "thread creation",
+		filename: "threadcreate.pprof",
+	})
+}
+
+func (l *lookup) Name() string { return l.name }
+
+func (l *lookup) SetFlags(f *flag.FlagSet) {
+	flag.StringVar(&l.filename, l.name+"profile", "", "write a "+l.long+" profile to `file`")
+}
+
+func (l *lookup) Enabled() bool { return l.filename != "" }
+
+func (l *lookup) Start() error { return nil }
+
+func (l *lookup) Stop() error {
+	return writeprofile(l.name, l.filename)
+}
+
 // block
 //
 //     - configure: N/A

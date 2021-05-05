@@ -15,6 +15,8 @@ func main() {
 		profile.MemProfile,
 		profile.BlockProfile,
 		profile.MutexProfile,
+		profile.GoroutineProfile,
+		profile.ThreadcreationProfile,
 	)
 
 	p.SetFlags(flag.CommandLine)
