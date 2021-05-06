@@ -11,11 +11,20 @@ func main() {
 	log.SetPrefix("example: ")
 	log.SetFlags(0)
 
+	// Setup profiler.
+	p := profile.New(
+		profile.CPUProfile,
+		profile.MemProfile,
+		profile.TraceProfile,
+	)
+
+	// Configure flags.
 	n := flag.Int("n", 1000000, "sum the integers 1 to `n`")
+	p.SetFlags(flag.CommandLine)
 	flag.Parse()
 
 	// Start profiler.
-	defer profile.Start().Stop()
+	defer p.Stop()
 
 	// Sum 1 to n.
 	sum := 0
