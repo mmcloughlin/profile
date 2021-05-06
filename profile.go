@@ -40,8 +40,6 @@ func Quiet(p *Profile) {
 	p.Configure(WithLogger(log.New(ioutil.Discard, "", 0)))
 }
 
-// TODO: func Start(options ...func(*Profile)) interface{ ... }
-
 func (p *Profile) addmethod(m method) {
 	p.methods = append(p.methods, m)
 }
