@@ -44,14 +44,7 @@ func (p *Profile) addmethod(m method) {
 	p.methods = append(p.methods, m)
 }
 
-func (p *Profile) SetFlags(f *flag.FlagSet) {
-	for _, m := range p.methods {
-		m.SetFlags(f)
-	}
-}
-
-func (p *Profile) Start() *Profile {
-	// Set defaults.
+func (p *Profile) setdefaults() {
 	if len(p.methods) == 0 {
 		p.Configure(CPUProfile)
 	}
@@ -59,6 +52,18 @@ func (p *Profile) Start() *Profile {
 	if p.log == nil {
 		p.Configure(WithLogger(log.Default()))
 	}
+}
+
+func (p *Profile) SetFlags(f *flag.FlagSet) {
+	p.setdefaults()
+	for _, m := range p.methods {
+		m.SetFlags(f)
+	}
+}
+
+func (p *Profile) Start() *Profile {
+	// Set defaults.
+	p.setdefaults()
 
 	// Start methods.
 	for _, m := range p.methods {
