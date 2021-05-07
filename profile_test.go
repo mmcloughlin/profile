@@ -162,6 +162,7 @@ func Chdir(t *testing.T, dir string) {
 
 // Logger builds a logger that writes to the test object.
 func Logger(tb testing.TB) *log.Logger {
+	tb.Helper()
 	return log.New(Writer(tb), "test: ", 0)
 }
 
@@ -171,6 +172,7 @@ type writer struct {
 
 // Writer builds a writer that logs all writes to the test object.
 func Writer(tb testing.TB) io.Writer {
+	tb.Helper()
 	return writer{tb}
 }
 
