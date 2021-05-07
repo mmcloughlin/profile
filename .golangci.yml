@@ -5,39 +5,45 @@ linters:
     - deadcode
     - depguard
     - dupl
-    - errcheck
+    #- errcheck
+    - errorlint
     - exhaustive
     - exportloopref
+    - forbidigo
+    - forcetypeassert
+    - gci
     - gocognit
     - gocritic
     - gocyclo
     - godot
-    - godox
-    - gofumpt
+    #- godox
+    #- gofumpt
     - goimports
-    - golint
+    #- golint
     - goprintffuncname
-    - gosec
+    #- gosec
     - gosimple
     - govet
+    - importas
     - ineffassign
-    - lll
+    #- lll
+    - makezero
     - misspell
     - nakedret
     - nestif
-    - noctx
-    - nolintlint
-    - prealloc
+    - nilerr
+    - predeclared
     - revive
     - staticcheck
     - structcheck
-    - stylecheck
-    - testpackage
+    #- stylecheck
+    #- thelper
     - typecheck
     - unconvert
     - unparam
     - unused
     - varcheck
+    - wastedassign
     - whitespace
 
 linters-settings:
