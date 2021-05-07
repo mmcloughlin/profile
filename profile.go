@@ -1,3 +1,4 @@
+// Package profile provides simple profiling for Go applications.
 package profile
 
 import (
