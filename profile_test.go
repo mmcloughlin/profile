@@ -3,6 +3,7 @@ package profile_test
 import (
 	"flag"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"reflect"
@@ -113,20 +114,16 @@ func TestFlagsConfiguration(t *testing.T) {
 			p.Start().Stop()
 
 			// Confirm we have the files we expect, and nothing else.
-			entries, err := os.ReadDir(dir)
+			entries, err := ioutil.ReadDir(dir)
 			if err != nil {
 				t.Fatal(err)
 			}
 			var got []string
 			for _, entry := range entries {
-				if !entry.Type().IsRegular() {
+				if !entry.Mode().IsRegular() {
 					t.Errorf("%s is not regular file", entry.Name())
 				}
-				info, err := entry.Info()
-				if err != nil {
-					t.Fatal(err)
-				}
-				if info.Size() == 0 {
+				if entry.Size() == 0 {
 					t.Errorf("file %v is empty", entry.Name())
 				}
 				got = append(got, entry.Name())
