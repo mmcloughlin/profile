@@ -365,7 +365,6 @@ func (t *tracer) Start() error {
 	t.f = f
 
 	return nil
-
 }
 
 func (t *tracer) Stop() error {

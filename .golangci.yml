@@ -17,7 +17,7 @@ linters:
     - gocyclo
     - godot
     #- godox
-    #- gofumpt
+    - gofumpt
     - goimports
     #- golint
     - goprintffuncname
@@ -44,7 +44,7 @@ linters:
     - unused
     - varcheck
     - wastedassign
-    #- whitespace
+    - whitespace
 
 linters-settings:
   depguard:
