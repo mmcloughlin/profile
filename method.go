@@ -65,7 +65,7 @@ func (c *cpu) Start() error {
 
 	// Start profile.
 	if err := pprof.StartCPUProfile(f); err != nil {
-		f.Close()
+		_ = f.Close() // best effort: ignore error since we already have one
 		return err
 	}
 
@@ -358,7 +358,7 @@ func (t *tracer) Start() error {
 
 	// Start trace.
 	if err := trace.Start(f); err != nil {
-		f.Close()
+		_ = f.Close() // best effort: ignore error since we already have one
 		return err
 	}
 
@@ -372,23 +372,24 @@ func (t *tracer) Stop() error {
 	return t.f.Close()
 }
 
-func writeprofile(name, filename string) error {
-	// Open file.
-	f, err := os.Create(filename)
-	if err != nil {
-		return err
-	}
-
+func writeprofile(name, filename string) (err error) {
 	// Lookup profile.
 	p := pprof.Lookup(name)
 	if p == nil {
 		return fmt.Errorf("unknown profile %q", name)
 	}
 
-	// Write.
-	if err := p.WriteTo(f, 0); err != nil {
+	// Open file.
+	f, err := os.Create(filename)
+	if err != nil {
 		return err
 	}
+	defer func() {
+		if errc := f.Close(); err == nil && errc != nil {
+			err = errc
+		}
+	}()
 
-	return f.Close()
+	// Write.
+	return p.WriteTo(f, 0)
 }

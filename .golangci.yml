@@ -5,7 +5,7 @@ linters:
     - deadcode
     - depguard
     - dupl
-    #- errcheck
+    - errcheck
     - errorlint
     - exhaustive
     - exportloopref
