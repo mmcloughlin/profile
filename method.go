@@ -18,30 +18,17 @@ type method interface {
 	Stop() error
 }
 
-// cpu
-//
-//     - configure:
-//         // runtime.SetCPUProfileRate(hz) // actually overridden by StartCPUProfile
-//     - start:
-//         open file
-//         pprof.StartCPUProfile(f)
-//     - stop:
-//         pprof.StopCPUProfile()
-//         close file
-//     - flags:
-//         -cpuprofile cpu.out
-//
+// CPUProfile enables cpu profiling.
+func CPUProfile(p *Profile) {
+	p.addmethod(&cpu{
+		filename: "cpu.pprof",
+	})
+}
 
 type cpu struct {
 	filename string
 
 	f io.WriteCloser
-}
-
-func CPUProfile(p *Profile) {
-	p.addmethod(&cpu{
-		filename: "cpu.pprof",
-	})
 }
 
 func (cpu) Name() string { return "cpu" }
@@ -79,26 +66,11 @@ func (c *cpu) Stop() error {
 	return c.f.Close()
 }
 
-// mem
-//
-//     - configure:
-//         runtime.MemProfileRate
-//     - start:
-//         N/A
-//     - stop:
-//         runtime.GC()
-//         pprof.Lookup("allocs").WriteTo(f, 0)
-//         close file
-//         restore runtime.MemProfileRate
-//     - flags:
-//         -memprofile mem.out
-//         -memprofilerate n
-
-type mem struct {
-	filename string
-	rate     int
-
-	prevrate int
+// MemProfile enables memory profiling.
+func MemProfile(p *Profile) {
+	p.addmethod(&mem{
+		filename: "mem.pprof",
+	})
 }
 
 // TODO: const DefaultMemProfileRate = 4096
@@ -106,10 +78,11 @@ type mem struct {
 // TODO: func MemProfileHeap() func(*Profile)
 // TODO: func MemProfileRate(rate int) func(*Profile)
 
-func MemProfile(p *Profile) {
-	p.addmethod(&mem{
-		filename: "mem.pprof",
-	})
+type mem struct {
+	filename string
+	rate     int
+
+	prevrate int
 }
 
 func (mem) Name() string { return "mem" }
@@ -147,33 +120,7 @@ func (m *mem) Stop() error {
 	return err
 }
 
-// goroutine
-//
-//     - configure: N/A
-//     - start: N/A
-//     - stop:
-//         open file
-//         pprof.Lookup("goroutine").WriteTo
-//         close file
-//     - flags: N/A
-
-// threadcreate
-//
-//     - configure: N/A
-//     - start: N/A
-//     - stop:
-//         open file
-//         pprof.Lookup("threadcreate").WriteTo
-//         close file
-//     - flags: N/A
-
-type lookup struct {
-	name string
-	long string
-
-	filename string
-}
-
+// GoroutineProfile enables goroutine profiling.
 func GoroutineProfile(p *Profile) {
 	p.addmethod(&lookup{
 		name:     "goroutine",
@@ -182,12 +129,20 @@ func GoroutineProfile(p *Profile) {
 	})
 }
 
+// ThreadcreationProfile enables thread creation profiling.
 func ThreadcreationProfile(p *Profile) {
 	p.addmethod(&lookup{
 		name:     "threadcreate",
 		long:     "thread creation",
 		filename: "threadcreate.pprof",
 	})
+}
+
+type lookup struct {
+	name string
+	long string
+
+	filename string
 }
 
 func (l *lookup) Name() string { return l.name }
@@ -204,30 +159,17 @@ func (l *lookup) Stop() error {
 	return writeprofile(l.name, l.filename)
 }
 
-// block
-//
-//     - configure: N/A
-//     - start:
-//         runtime.SetBlockProfileRate
-//     - stop:
-//         open file
-//         pprof.Lookup("block").WriteTo
-//         close file
-//         reset SetBlockProfileRate
-//     - flags:
-//         -blockprofile block.out
-//         -blockprofilerate n
-
-type block struct {
-	filename string
-	rate     int
-}
-
+// BlockProfile enables block (contention) profiling.
 func BlockProfile(p *Profile) {
 	p.addmethod(&block{
 		filename: "block.pprof",
 		rate:     1,
 	})
+}
+
+type block struct {
+	filename string
+	rate     int
 }
 
 func (block) Name() string { return "block" }
@@ -259,30 +201,17 @@ func (b *block) Stop() error {
 	return err
 }
 
-// mutex
-//
-//     - configure:
-//         runtime.SetMutexProfileFraction
-//     - start: N/A
-//     - stop:
-//         open file
-//         pprof.Lookup("mutex").WriteTo
-//         close file
-//         reset SetMutexProfileFraction
-//     - flags:
-//         -mutexprofile mutex.out
-//         -mutexprofilefraction n
-
-type mutex struct {
-	filename string
-	rate     int
-}
-
+// MutexProfile enables mutex profiling.
 func MutexProfile(p *Profile) {
 	p.addmethod(&mutex{
 		filename: "mutex.pprof",
 		rate:     1,
 	})
+}
+
+type mutex struct {
+	filename string
+	rate     int
 }
 
 func (mutex) Name() string { return "mutex" }
@@ -314,27 +243,17 @@ func (m *mutex) Stop() error {
 	return err
 }
 
-// trace
-//
-//     - configure: N/A
-//     - start:
-//         open file
-//         trace.Start(w)
-//     - stop:
-//         trace.Stop()
-//     - flags:
-//         -trace trace.out
+// TraceProfile enables execution tracing.
+func TraceProfile(p *Profile) {
+	p.addmethod(&tracer{
+		filename: "trace.out",
+	})
+}
 
 type tracer struct {
 	filename string
 
 	f io.WriteCloser
-}
-
-func TraceProfile(p *Profile) {
-	p.addmethod(&tracer{
-		filename: "trace.out",
-	})
 }
 
 func (tracer) Name() string { return "trace" }

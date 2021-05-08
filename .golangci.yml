@@ -19,9 +19,9 @@ linters:
     #- godox
     - gofumpt
     - goimports
-    #- golint
+    - golint
     - goprintffuncname
-    #- gosec
+    - gosec
     - gosimple
     - govet
     - importas

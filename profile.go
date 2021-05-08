@@ -7,6 +7,7 @@ import (
 	"log"
 )
 
+// Profile represents a profiling session.
 type Profile struct {
 	methods []method
 	log     func(string, ...interface{})
@@ -14,6 +15,7 @@ type Profile struct {
 	running []method
 }
 
+// New creates a new profiling session configured with the given options.
 func New(options ...func(*Profile)) *Profile {
 	p := &Profile{
 		log: log.Printf,
@@ -22,10 +24,12 @@ func New(options ...func(*Profile)) *Profile {
 	return p
 }
 
+// Start a new profiling session with the given options.
 func Start(options ...func(*Profile)) *Profile {
 	return New(options...).Start()
 }
 
+// Configure applies the given options to this profiling session.
 func (p *Profile) Configure(options ...func(*Profile)) {
 	for _, option := range options {
 		option(p)
@@ -35,10 +39,13 @@ func (p *Profile) Configure(options ...func(*Profile)) {
 // TODO: func NoShutdownHook(p *Profile)
 // TODO: func ProfilePath(path string) func(*Profile)
 
+// WithLogger configures informational messages to be logged to the given
+// logger. Defaults to the standard library global logger.
 func WithLogger(l *log.Logger) func(p *Profile) {
 	return func(p *Profile) { p.log = l.Printf }
 }
 
+// Quiet suppresses logging.
 func Quiet(p *Profile) {
 	p.Configure(WithLogger(log.New(ioutil.Discard, "", 0)))
 }
@@ -53,6 +60,8 @@ func (p *Profile) setdefaults() {
 	}
 }
 
+// SetFlags registers flags to configure this profiling session.  This should be
+// called after all options have been applied.
 func (p *Profile) SetFlags(f *flag.FlagSet) {
 	p.setdefaults()
 	for _, m := range p.methods {
@@ -60,6 +69,7 @@ func (p *Profile) SetFlags(f *flag.FlagSet) {
 	}
 }
 
+// Start profiling.
 func (p *Profile) Start() *Profile {
 	// Set defaults.
 	p.setdefaults()
@@ -82,6 +92,7 @@ func (p *Profile) Start() *Profile {
 	return p
 }
 
+// Stop profiling.
 func (p *Profile) Stop() {
 	for _, m := range p.running {
 		if err := m.Stop(); err != nil {
