@@ -88,6 +88,30 @@ func TestFlagsConfiguration(t *testing.T) {
 			Args:    []string{"-memprofile=mem.out"},
 			Files:   []string{"mem.out"},
 		},
+
+		// All.
+		{
+			Name:    "all",
+			Options: []func(*profile.Profile){profile.AllProfiles},
+			Args: []string{
+				"-cpuprofile=cpu.out",
+				"-memprofile=mem.out",
+				"-goroutineprofile=goroutine.out",
+				"-threadcreateprofile=threadcreate.out",
+				"-blockprofile=block.out",
+				"-mutexprofile=mutex.out",
+				"-trace=trace.out",
+			},
+			Files: []string{
+				"cpu.out",
+				"mem.out",
+				"goroutine.out",
+				"threadcreate.out",
+				"block.out",
+				"mutex.out",
+				"trace.out",
+			},
+		},
 	}
 	for _, c := range cases {
 		c := c // scopelint

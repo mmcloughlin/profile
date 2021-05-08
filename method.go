@@ -10,6 +10,21 @@ import (
 	"runtime/trace"
 )
 
+// AllProfiles enables all profiling types. Running all profiles at once is
+// generally not a good idea, so it's recommended that this option is combined
+// with some configuration mechanism, via flags or otherwise.
+func AllProfiles(p *Profile) {
+	p.Configure(
+		CPUProfile,
+		MemProfile,
+		GoroutineProfile,
+		ThreadcreationProfile,
+		BlockProfile,
+		MutexProfile,
+		TraceProfile,
+	)
+}
+
 type method interface {
 	Name() string
 	SetFlags(f *flag.FlagSet)
