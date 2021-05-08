@@ -24,7 +24,7 @@ func main() {
 	flag.Parse()
 
 	// Start profiler.
-	defer p.Stop()
+	defer p.Start().Stop()
 
 	// Sum 1 to n.
 	sum := 0
