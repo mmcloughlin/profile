@@ -5,12 +5,15 @@ import (
 	"flag"
 	"io/ioutil"
 	"log"
+	"os"
+	"os/signal"
 )
 
 // Profile represents a profiling session.
 type Profile struct {
-	methods []method
-	log     func(string, ...interface{})
+	methods        []method
+	log            func(string, ...interface{})
+	noshutdownhook bool
 
 	running []method
 }
@@ -46,6 +49,12 @@ func WithLogger(l *log.Logger) func(p *Profile) {
 func Quiet(p *Profile) {
 	p.Configure(WithLogger(log.New(ioutil.Discard, "", 0)))
 }
+
+// NoShutdownHook controls whether the profiling session should shutdown on
+// interrupt.  Programs with more sophisticated signal handling should use this
+// option to disable the default shutdown handler, and ensure the profile Stop()
+// method is called during shutdown.
+func NoShutdownHook(p *Profile) { p.noshutdownhook = true }
 
 func (p *Profile) addmethod(m method) {
 	p.methods = append(p.methods, m)
@@ -84,6 +93,20 @@ func (p *Profile) Start() *Profile {
 
 		p.log("%s profile: started", m.Name())
 		p.running = append(p.running, m)
+	}
+
+	// Shutdown hook.
+	if !p.noshutdownhook {
+		go func() {
+			c := make(chan os.Signal, 1)
+			signal.Notify(c, os.Interrupt)
+			s := <-c
+
+			p.log("caught %v: stopping profiles", s)
+			p.Stop()
+
+			os.Exit(0)
+		}()
 	}
 
 	return p
