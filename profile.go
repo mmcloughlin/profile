@@ -36,9 +36,6 @@ func (p *Profile) Configure(options ...func(*Profile)) {
 	}
 }
 
-// TODO: func NoShutdownHook(p *Profile)
-// TODO: func ProfilePath(path string) func(*Profile)
-
 // WithLogger configures informational messages to be logged to the given
 // logger. Defaults to the standard library global logger.
 func WithLogger(l *log.Logger) func(p *Profile) {

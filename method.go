@@ -73,11 +73,6 @@ func MemProfile(p *Profile) {
 	})
 }
 
-// TODO: const DefaultMemProfileRate = 4096
-// TODO: func MemProfileAllocs() func(*Profile)
-// TODO: func MemProfileHeap() func(*Profile)
-// TODO: func MemProfileRate(rate int) func(*Profile)
-
 type mem struct {
 	filename string
 	rate     int

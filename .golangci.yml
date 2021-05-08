@@ -16,7 +16,7 @@ linters:
     - gocritic
     - gocyclo
     - godot
-    #- godox
+    - godox
     - gofumpt
     - goimports
     - golint
