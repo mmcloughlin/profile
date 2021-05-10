@@ -33,11 +33,15 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
+      - name: Configure Go Environment
+        run: |
+          echo GOPATH=${{ runner.workspace }} >> $GITHUB_ENV
+          echo ${{ runner.workspace }}/bin >> $GITHUB_PATH
       - name: Checkout code
         uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # v2.3.4
         with:
           persist-credentials: false
+      - name: Bootstrap
+        run: ./script/bootstrap
       - name: Lint
-        uses: golangci/golangci-lint-action@5c56cd6c9dc07901af25baab6f2b0d9f3b7c3018 # v2.5.2
-        with:
-          version: v1.39.0
+        run: ./script/lint
