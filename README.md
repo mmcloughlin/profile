@@ -46,6 +46,8 @@ func main() {
 }
 ```
 
+See the registered flags:
+
 [embedmd]:# (internal/example/flags/help.err)
 ```err
 Usage of flags:
@@ -59,4 +61,23 @@ Usage of flags:
     	sum the integers 1 to n (default 1000000)
   -trace file
     	write an execution trace to file
+```
+
+Profile the application with the following flags:
+
+[embedmd]:# (internal/example/flags/run.sh sh /.*cpuprofile.*/)
+```sh
+flags -n 1000000000 -cpuprofile cpu.out -memprofile mem.out
+```
+
+We'll see additional logging in the output, as well as the profiles `cpu.out`
+and `mem.out` written on exit.
+
+[embedmd]:# (internal/example/flags/run.err)
+```err
+example: cpu profile: started
+example: mem profile: started
+example: sum: 500000000500000000
+example: cpu profile: stopped
+example: mem profile: stopped
 ```
