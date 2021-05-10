@@ -1,1 +1,1 @@
-flags -h
+example -h

@@ -50,7 +50,7 @@ See the registered flags:
 
 [embedmd]:# (internal/example/flags/help.err)
 ```err
-Usage of flags:
+Usage of example:
   -cpuprofile file
     	write a cpu profile to file
   -memprofile file
@@ -67,7 +67,7 @@ Profile the application with the following flags:
 
 [embedmd]:# (internal/example/flags/run.sh sh /.*cpuprofile.*/)
 ```sh
-flags -n 1000000000 -cpuprofile cpu.out -memprofile mem.out
+example -n 1000000000 -cpuprofile cpu.out -memprofile mem.out
 ```
 
 We'll see additional logging in the output, as well as the profiles `cpu.out`

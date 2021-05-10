@@ -1,4 +1,4 @@
-Usage of flags:
+Usage of example:
   -cpuprofile file
     	write a cpu profile to file
   -memprofile file

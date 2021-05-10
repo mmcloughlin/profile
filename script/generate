@@ -4,11 +4,9 @@ set -exuo pipefail
 
 # Generate example output.
 for example in ./internal/example/*; do
-    name=$(basename "${example}")
-
     # Compile.
     bindir=$(mktemp -d)
-    go build -o "${bindir}/${name}" "${example}"
+    go build -o "${bindir}/example" "${example}"
 
     for script in ${example}/*.sh; do
         root="${script%.sh}"
