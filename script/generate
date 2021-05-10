@@ -6,7 +6,7 @@ set -exuo pipefail
 for example in ./internal/example/*; do
     name=$(basename "${example}")
 
-    # Compile
+    # Compile.
     bindir=$(mktemp -d)
     go build -o "${bindir}/${name}" "${example}"
 
@@ -15,10 +15,9 @@ for example in ./internal/example/*; do
         PATH="${bindir}:${PATH}" bash "${script}" > "${root}.out" 2> "${root}.err"
     done
 
-    # Cleanup
+    # Cleanup.
     rm -r "${bindir}"
 done
-# bash ./internal/examples/cli/cmd.sh 2>&1 | tee ./internal/examples/cli/output
 
 # Generate README.
 embedmd -w README.md
