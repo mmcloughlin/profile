@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -exuo pipefail
+
+# Generate example output.
+for example in ./internal/example/*; do
+    name=$(basename "${example}")
+
+    # Compile.
+    bindir=$(mktemp -d)
+    go build -o "${bindir}/${name}" "${example}"
+
+    for script in ${example}/*.sh; do
+        root="${script%.sh}"
+        PATH="${bindir}:${PATH}" bash "${script}" > "${root}.out" 2> "${root}.err"
+    done
+
+    # Cleanup.
+    rm -r "${bindir}"
+done
+
+# Generate README.
+embedmd -w README.md
