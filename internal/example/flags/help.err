@@ -1,0 +1,11 @@
+Usage of flags:
+  -cpuprofile file
+    	write a cpu profile to file
+  -memprofile file
+    	write an allocation profile to file
+  -memprofilerate rate
+    	set memory allocation profiling rate (see runtime.MemProfileRate)
+  -n n
+    	sum the integers 1 to n (default 1000000)
+  -trace file
+    	write an execution trace to file
