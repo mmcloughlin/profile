@@ -81,3 +81,16 @@ example: sum: 500000000500000000
 example: cpu profile: stopped
 example: mem profile: stopped
 ```
+
+## Thanks
+
+Thank you to [Dave Cheney](https://dave.cheney.net/) and
+[contributors](https://github.com/pkg/profile/graphs/contributors) for the
+excellent [`pkg/profile`](https://github.com/pkg/profile) package, which
+provided the inspiration and basis for this work.
+
+## License
+
+`profile` is available under the [BSD 3-Clause License](LICENSE). The license
+retains the copyright notice from
+[`pkg/profile`](https://github.com/pkg/profile).
