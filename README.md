@@ -10,6 +10,30 @@ go get github.com/mmcloughlin/profile
 
 ## Usage
 
+Enabling profiling in your application is as simple as one line at the top of
+your main function.
+
+[embedmd]:# (internal/example/basic/main.go go /import/ /^}/)
+```go
+import "github.com/mmcloughlin/profile"
+
+func main() {
+	defer profile.Start().Stop()
+	// ...
+}
+```
+
+This will write a CPU profile to the current directory. Generate multiple
+profiles by passing options to the `Start` function.
+
+[embedmd]:# (internal/example/multi/main.go go /defer.*/)
+```go
+defer profile.Start(profile.CPUProfile, profile.MemProfile).Stop()
+```
+
+Profiles can also be configured by the user via [flags](#flags) or [environment
+variable](#environment), as demonstrated in the examples below.
+
 ### Flags
 
 The following example shows how to configure `profile` via flags with multiple

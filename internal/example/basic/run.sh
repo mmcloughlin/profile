@@ -1,0 +1,3 @@
+example
+
+rm cpu.pprof
