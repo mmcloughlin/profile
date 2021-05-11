@@ -2,6 +2,12 @@
 
 Simple profiling for Go
 
+## Install
+
+```
+go get github.com/mmcloughlin/profile
+```
+
 ## Usage
 
 The following example shows how to configure `profile` via flags with multiple
