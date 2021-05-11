@@ -3,10 +3,12 @@ package profile
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 )
 
 // Profile represents a profiling session.
@@ -14,6 +16,7 @@ type Profile struct {
 	methods        []method
 	log            func(string, ...interface{})
 	noshutdownhook bool
+	envvar         string
 
 	running []method
 }
@@ -56,6 +59,11 @@ func Quiet(p *Profile) {
 // method is called during shutdown.
 func NoShutdownHook(p *Profile) { p.noshutdownhook = true }
 
+// ConfigEnvVar specifies an environment variable to configure profiles from.
+func ConfigEnvVar(key string) func(*Profile) {
+	return func(p *Profile) { p.envvar = key }
+}
+
 func (p *Profile) addmethod(m method) {
 	p.methods = append(p.methods, m)
 }
@@ -75,10 +83,36 @@ func (p *Profile) SetFlags(f *flag.FlagSet) {
 	}
 }
 
+func (p *Profile) config(cfg string) {
+	f := flag.NewFlagSet("", flag.ExitOnError)
+	p.SetFlags(f)
+
+	f.Usage = func() {
+		f.VisitAll(func(opt *flag.Flag) {
+			value, usage := flag.UnquoteUsage(opt)
+			fmt.Fprintf(f.Output(), "%s=%s\n\t%s\n", opt.Name, value, usage)
+		})
+	}
+
+	args := []string{}
+	for _, arg := range strings.Split(cfg, ",") {
+		args = append(args, "-"+arg)
+	}
+
+	f.Parse(args)
+}
+
 // Start profiling.
 func (p *Profile) Start() *Profile {
 	// Set defaults.
 	p.setdefaults()
+
+	// Optionally configure via environment variable.
+	if p.envvar != "" {
+		if cfg := os.Getenv(p.envvar); cfg != "" {
+			p.config(cfg)
+		}
+	}
 
 	// Start methods.
 	for _, m := range p.methods {
