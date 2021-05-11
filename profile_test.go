@@ -137,30 +137,57 @@ func TestFlagsConfiguration(t *testing.T) {
 			// Run.
 			p.Start().Stop()
 
-			// Confirm we have the files we expect, and nothing else.
-			entries, err := ioutil.ReadDir(dir)
-			if err != nil {
-				t.Fatal(err)
-			}
-			var got []string
-			for _, entry := range entries {
-				if !entry.Mode().IsRegular() {
-					t.Errorf("%s is not regular file", entry.Name())
-				}
-				if entry.Size() == 0 {
-					t.Errorf("file %v is empty", entry.Name())
-				}
-				got = append(got, entry.Name())
-			}
-
-			sort.Strings(got)
-			sort.Strings(c.Files)
-			if !reflect.DeepEqual(got, c.Files) {
-				t.Logf("expect: %v", c.Files)
-				t.Logf("   got: %v", got)
-				t.Error("unexpected file output")
-			}
+			// Confirm we have the files we expect.
+			AssertDirContains(t, dir, c.Files)
 		})
+	}
+}
+
+func TestEnvConfiguration(t *testing.T) {
+	dir := t.TempDir()
+	Chdir(t, dir)
+
+	// Set the environment variable for this test.
+	key := "PROFILE"
+	Setenv(t, key, "cpuprofile=cpu.out,memprofile=mem.out")
+
+	// Run profiler.
+	profile.Start(
+		profile.AllProfiles,
+		profile.ConfigEnvVar(key),
+		profile.WithLogger(Logger(t)),
+	).Stop()
+
+	// Verify we have what we expect.
+	AssertDirContains(t, dir, []string{"cpu.out", "mem.out"})
+}
+
+// AssertDirContains asserts that dir contains non-empty files called filenames,
+// and nothing else.
+func AssertDirContains(t *testing.T, dir string, filenames []string) {
+	t.Helper()
+
+	entries, err := ioutil.ReadDir(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, entry := range entries {
+		if !entry.Mode().IsRegular() {
+			t.Errorf("%s is not regular file", entry.Name())
+		}
+		if entry.Size() == 0 {
+			t.Errorf("file %v is empty", entry.Name())
+		}
+		got = append(got, entry.Name())
+	}
+
+	sort.Strings(got)
+	sort.Strings(filenames)
+	if !reflect.DeepEqual(got, filenames) {
+		t.Logf("expect: %v", filenames)
+		t.Logf("   got: %v", got)
+		t.Error("unexpected file output")
 	}
 }
 
@@ -182,6 +209,22 @@ func Chdir(t *testing.T, dir string) {
 			t.Fatal(err)
 		}
 	})
+}
+
+// Setenv sets an environment variable for the duration of a test.
+func Setenv(t *testing.T, key, value string) {
+	t.Helper()
+
+	prev, ok := os.LookupEnv(key)
+	t.Cleanup(func() {
+		if ok {
+			os.Setenv(key, prev)
+		} else {
+			os.Unsetenv(key)
+		}
+	})
+
+	os.Setenv(key, value)
 }
 
 // Logger builds a logger that writes to the test object.
