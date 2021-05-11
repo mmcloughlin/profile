@@ -10,6 +10,8 @@ go get github.com/mmcloughlin/profile
 
 ## Usage
 
+### Flags
+
 The following example shows how to configure `profile` via flags with multiple
 available profile types.
 
@@ -86,6 +88,62 @@ example: mem profile: started
 example: sum: 500000000500000000
 example: cpu profile: stopped
 example: mem profile: stopped
+```
+
+### Environment
+
+For a user-facing tool you may not want to expose profiling options via flags.
+The `profile` package also offers configuration by environment variable, similar
+to the `GODEBUG` option offered by the Go runtime.
+
+[embedmd]:# (internal/example/env/main.go go /.*Setup.*/ /.*Stop.*/)
+```go
+	// Setup profiler.
+	defer profile.Start(
+		profile.AllProfiles,
+		profile.ConfigEnvVar("PROFILE"),
+	).Stop()
+```
+
+Now you can enable profiling with an environment variable, as follows:
+
+[embedmd]:# (internal/example/env/run.sh sh /.*cpuprofile.*/)
+```sh
+PROFILE=cpuprofile=cpu.out,memprofile=mem.out example -n 1000000000
+```
+
+The output will be just the same as for the previous flags example. Set the
+environment variable to `help` to get help on available options:
+
+[embedmd]:# (internal/example/env/help.sh)
+```sh
+PROFILE=help example
+```
+
+In this case you'll see:
+
+[embedmd]:# (internal/example/env/help.err)
+```err
+blockprofile=file
+	write a goroutine blocking profile to file
+blockprofilerate=rate
+	set blocking profile rate (see runtime.SetBlockProfileRate)
+cpuprofile=file
+	write a cpu profile to file
+goroutineprofile=file
+	write a running goroutine profile to file
+memprofile=file
+	write an allocation profile to file
+memprofilerate=rate
+	set memory allocation profiling rate (see runtime.MemProfileRate)
+mutexprofile=string
+	write a mutex contention profile to the named file after execution
+mutexprofilefraction=int
+	if >= 0, calls runtime.SetMutexProfileFraction()
+threadcreateprofile=file
+	write a thread creation profile to file
+trace=file
+	write an execution trace to file
 ```
 
 ## Thanks

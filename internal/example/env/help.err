@@ -1,0 +1,20 @@
+blockprofile=file
+	write a goroutine blocking profile to file
+blockprofilerate=rate
+	set blocking profile rate (see runtime.SetBlockProfileRate)
+cpuprofile=file
+	write a cpu profile to file
+goroutineprofile=file
+	write a running goroutine profile to file
+memprofile=file
+	write an allocation profile to file
+memprofilerate=rate
+	set memory allocation profiling rate (see runtime.MemProfileRate)
+mutexprofile=string
+	write a mutex contention profile to the named file after execution
+mutexprofilefraction=int
+	if >= 0, calls runtime.SetMutexProfileFraction()
+threadcreateprofile=file
+	write a thread creation profile to file
+trace=file
+	write an execution trace to file

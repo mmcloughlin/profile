@@ -1,0 +1,5 @@
+example: cpu profile: started
+example: mem profile: started
+example: sum: 500000000500000000
+example: cpu profile: stopped
+example: mem profile: stopped
