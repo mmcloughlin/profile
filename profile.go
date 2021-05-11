@@ -115,9 +115,7 @@ func (p *Profile) Start() *Profile {
 
 	// Optionally configure via environment variable.
 	if p.envvar != "" {
-		if cfg := os.Getenv(p.envvar); cfg != "" {
-			p.config(cfg)
-		}
+		p.config(os.Getenv(p.envvar))
 	}
 
 	// Start methods.
