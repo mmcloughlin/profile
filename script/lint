@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -exuo pipefail
+set -euo pipefail
 
 args=()
 if [[ "${GITHUB_ACTIONS:-false}" == "true" ]]; then
