@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
-set -exuo pipefail
+set -euo pipefail
 
-golangci-lint run
+args=()
+if [[ "${GITHUB_ACTIONS:-false}" == "true" ]]; then
+    args+=("--out-format" "github-actions")
+fi
+
+golangci-lint run "${args[@]}"
