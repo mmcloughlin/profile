@@ -83,7 +83,17 @@ func (p *Profile) SetFlags(f *flag.FlagSet) {
 	}
 }
 
+// config configures profiles based on a GODEBUG-like configuration string.
 func (p *Profile) config(cfg string) {
+	// Convert config string into equivalent command-line arguments and parse them.
+	args := []string{}
+	for _, arg := range strings.Split(cfg, ",") {
+		args = append(args, "-"+arg)
+	}
+
+	// Register flags on a custom flagset. Register custom usage function that
+	// will output flags in a format closer to the expected format of the
+	// configuration string.
 	f := flag.NewFlagSet("", flag.ExitOnError)
 	p.SetFlags(f)
 
@@ -92,11 +102,6 @@ func (p *Profile) config(cfg string) {
 			value, usage := flag.UnquoteUsage(opt)
 			fmt.Fprintf(f.Output(), "%s=%s\n\t%s\n", opt.Name, value, usage)
 		})
-	}
-
-	args := []string{}
-	for _, arg := range strings.Split(cfg, ",") {
-		args = append(args, "-"+arg)
 	}
 
 	f.Parse(args)
