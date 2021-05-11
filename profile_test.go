@@ -162,6 +162,31 @@ func TestEnvConfiguration(t *testing.T) {
 	AssertDirContains(t, dir, []string{"cpu.out", "mem.out"})
 }
 
+// TestEnvConfigurationEmpty is a regression test for the case where a
+// configuration environment variable is specified but it's empty or unset.  In
+// this case no profilers should be run.
+func TestEnvConfigurationEmpty(t *testing.T) {
+	dir := t.TempDir()
+	Chdir(t, dir)
+
+	// Use a key that should not be set. Bail in the absurdly unlikely case that
+	// it is set.
+	key := "PROFILE_VARIABLE_EMPTY"
+	if os.Getenv(key) != "" {
+		t.FailNow()
+	}
+
+	// Run profiler.
+	profile.Start(
+		profile.AllProfiles,
+		profile.ConfigEnvVar(key),
+		profile.WithLogger(Logger(t)),
+	).Stop()
+
+	// Verify the directory is empty.
+	AssertDirContains(t, dir, nil)
+}
+
 // AssertDirContains asserts that dir contains non-empty files called filenames,
 // and nothing else.
 func AssertDirContains(t *testing.T, dir string, filenames []string) {
