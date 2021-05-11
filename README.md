@@ -23,7 +23,8 @@ func main() {
 }
 ```
 
-This will write a CPU profile to the current directory. Generate multiple profiles by passing options to the `Start` function.
+This will write a CPU profile to the current directory. Generate multiple
+profiles by passing options to the `Start` function.
 
 [embedmd]:# (internal/example/multi/main.go go /defer.*/)
 ```go
