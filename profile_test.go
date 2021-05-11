@@ -218,13 +218,19 @@ func Setenv(t *testing.T, key, value string) {
 	prev, ok := os.LookupEnv(key)
 	t.Cleanup(func() {
 		if ok {
-			os.Setenv(key, prev)
+			if err := os.Setenv(key, prev); err != nil {
+				t.Fatal(err)
+			}
 		} else {
-			os.Unsetenv(key)
+			if err := os.Unsetenv(key); err != nil {
+				t.Fatal(err)
+			}
 		}
 	})
 
-	os.Setenv(key, value)
+	if err := os.Setenv(key, value); err != nil {
+		t.Fatal(err)
+	}
 }
 
 // Logger builds a logger that writes to the test object.
