@@ -23,7 +23,15 @@ func main() {
 }
 ```
 
-This will write a CPU profile to the current directory.
+This will write a CPU profile to the current directory. Generate multiple profiles by passing options to the `Start` function.
+
+[embedmd]:# (internal/example/multi/main.go go /defer.*/)
+```go
+defer profile.Start(profile.CPUProfile, profile.MemProfile).Stop()
+```
+
+Profiles can also be configured by the user via [flags](#flags) or [environment
+variable](#environment), as demonstrated in the examples below.
 
 ### Flags
 

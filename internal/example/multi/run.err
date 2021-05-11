@@ -1,0 +1,4 @@
+example: cpu profile: started
+example: mem profile: started
+example: cpu profile: stopped
+example: mem profile: stopped
