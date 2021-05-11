@@ -10,6 +10,21 @@ go get github.com/mmcloughlin/profile
 
 ## Usage
 
+Enabling profiling in your application is as simple as one line at the top of
+your main function.
+
+[embedmd]:# (internal/example/basic/main.go go /import/ /^}/)
+```go
+import "github.com/mmcloughlin/profile"
+
+func main() {
+	defer profile.Start().Stop()
+	// ...
+}
+```
+
+This will write a CPU profile to the current directory.
+
 ### Flags
 
 The following example shows how to configure `profile` via flags with multiple
