@@ -1,5 +1,7 @@
 # profile
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/mmcloughlin/profile.svg)](https://pkg.go.dev/github.com/mmcloughlin/profile)
+
 Simple profiling for Go.
 
 * Easy management of Go's built-in
