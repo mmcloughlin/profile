@@ -1,6 +1,17 @@
 # profile
 
-Simple profiling for Go
+Simple profiling for Go.
+
+* Easy management of Go's built-in
+  [profiling](https://golang.org/pkg/runtime/pprof) and
+  [tracing](https://golang.org/pkg/runtime/trace)
+* Based on the widely-used [`pkg/profile`](https://github.com/pkg/profile):
+  mostly-compatible API
+* Supports generating multiple profiles at once
+* Configurable with [idiomatic flags](#flags): `-cpuprofile`, `-memprofile`, ...
+  just like `go test`
+* Configurable by [environment variable](#environment): key-value interface like
+  `GODEBUG`
 
 ## Install
 
