@@ -104,7 +104,8 @@ func (p *Profile) config(cfg string) {
 		})
 	}
 
-	f.Parse(args)
+	// Parse. Discard error because ExitOnError ensures it's handled internally.
+	_ = f.Parse(args)
 }
 
 // Start profiling.
