@@ -50,17 +50,8 @@ variable](#environment), as demonstrated in the examples below.
 The following example shows how to configure `profile` via flags with multiple
 available profile types.
 
-[embedmd]:# (internal/example/flags/main.go)
+[embedmd]:# (internal/example/flags/main.go /func main/ /^}/)
 ```go
-package main
-
-import (
-	"flag"
-	"log"
-
-	"github.com/mmcloughlin/profile"
-)
-
 func main() {
 	log.SetPrefix("example: ")
 	log.SetFlags(0)
