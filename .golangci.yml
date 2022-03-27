@@ -19,7 +19,6 @@ linters:
     - godox
     - gofumpt
     - goimports
-    - golint
     - goprintffuncname
     - gosec
     - gosimple
@@ -58,3 +57,6 @@ linters-settings:
 
 issues:
   exclude-use-default: false
+  exclude:
+    # gosec: G304: Potential file inclusion via variable.
+    - G304
