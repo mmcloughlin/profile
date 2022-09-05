@@ -1,3 +1,4 @@
+// Command flags is an example of configuring profilers via command-line flags.
 package main
 
 import (

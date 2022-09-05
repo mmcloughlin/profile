@@ -1,3 +1,4 @@
+// Command env is an example of confuguring profilers via environment variables.
 package main
 
 import (
