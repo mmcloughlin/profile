@@ -2,7 +2,6 @@ linters:
   disable-all: true
   enable:
     - asciicheck
-    - deadcode
     - depguard
     - dupl
     - errcheck
@@ -34,14 +33,12 @@ linters:
     - predeclared
     - revive
     - staticcheck
-    - structcheck
     - stylecheck
     - thelper
     - typecheck
     - unconvert
     - unparam
     - unused
-    - varcheck
     - wastedassign
     - whitespace
 
