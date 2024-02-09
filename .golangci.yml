@@ -44,9 +44,11 @@ linters:
 
 linters-settings:
   depguard:
-    list-type: whitelist
-    packages:
-      - github.com/mmcloughlin/profile
+    rules:
+      main:
+        allow:
+          - github.com/mmcloughlin/profile
+          - $gostd
 
   lll:
     line-length: 140
